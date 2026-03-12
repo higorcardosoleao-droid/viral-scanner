@@ -77,9 +77,16 @@ export default function GenerateVideo() {
       const a = document.createElement("a");
       a.href = videoUrl;
       a.download = `viral-video-${generatedVideoId}.mp4`;
+      a.style.display = "none";
       document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      setTimeout(() => {
+        a.click();
+        setTimeout(() => {
+          if (document.body.contains(a)) {
+            document.body.removeChild(a);
+          }
+        }, 100);
+      }, 100);
     }
   };
 
