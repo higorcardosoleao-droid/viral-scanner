@@ -78,3 +78,12 @@
 - [x] Configurar Railway ou Hugging Face Spaces
 - [x] Documentar processo de deploy
 - [ ] Testar fluxo completo em produção
+
+
+## Bugs Encontrados (CRÍTICOS)
+
+- [ ] Templates não carregam no dropdown
+- [ ] Projeto não está no GitHub (push necessário)
+- [ ] Seed de templates não foi executado no banco
+- [ ] Rota tRPC para listar templates falta
+- [ ] Frontend não chama a rota de templates
