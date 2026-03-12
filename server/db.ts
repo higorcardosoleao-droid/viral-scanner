@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, videoTemplates, generatedVideos, videoAssets, InsertGeneratedVideo, InsertVideoAsset } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,79 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+/**
+ * Busca um template viral por ID
+ */
+export async function getTemplateById(templateId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(videoTemplates).where(eq(videoTemplates.id, templateId)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+/**
+ * Lista todos os templates virais
+ */
+export async function listTemplates() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(videoTemplates);
+}
+
+/**
+ * Cria um novo vídeo gerado
+ */
+export async function createGeneratedVideo(video: InsertGeneratedVideo) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(generatedVideos).values(video);
+  return result[0];
+}
+
+/**
+ * Busca um vídeo gerado por ID
+ */
+export async function getGeneratedVideoById(videoId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(generatedVideos).where(eq(generatedVideos.id, videoId)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+/**
+ * Lista vídeos gerados por um usuário
+ */
+export async function listUserVideos(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(generatedVideos).where(eq(generatedVideos.userId, userId));
+}
+
+/**
+ * Atualiza status de um vídeo gerado
+ */
+export async function updateVideoStatus(
+  videoId: number,
+  status: "processing" | "ready" | "failed",
+  updates?: { videoUrl?: string; audioUrl?: string; duration?: number; errorMessage?: string }
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const updateData: Record<string, unknown> = { status, updatedAt: new Date() };
+  if (updates?.videoUrl) updateData.videoUrl = updates.videoUrl;
+  if (updates?.audioUrl) updateData.audioUrl = updates.audioUrl;
+  if (updates?.duration) updateData.duration = updates.duration;
+  if (updates?.errorMessage) updateData.errorMessage = updates.errorMessage;
+  
+  await db.update(generatedVideos).set(updateData).where(eq(generatedVideos.id, videoId));
+}
+
+/**
+ * Registra um asset de vídeo (imagem ou vídeo usado)
+ */
+export async function createVideoAsset(asset: InsertVideoAsset) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.insert(videoAssets).values(asset);
+}
