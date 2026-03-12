@@ -1,0 +1,24 @@
+title: Viral Scanner
+description: Gerador automático de vídeos virais para redes sociais
+sdk: docker
+sdk_version: latest
+app_file: null
+models:
+  - id: mistralai/Mistral-7B-Instruct-v0.1
+    name: Mistral 7B
+    description: LLM para geração de roteiros
+hardware:
+  cpu: t4
+  memory: 16gb
+  storage: 50gb
+env:
+  - name: NODE_ENV
+    value: production
+  - name: PORT
+    value: "3000"
+  - name: DATABASE_URL
+    description: URL de conexão MySQL
+  - name: YOUTUBE_API_KEY
+    description: Chave da API do YouTube
+  - name: BUILT_IN_FORGE_API_KEY
+    description: Chave da API Manus
